@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 function Erp() {
   const { reset } = useForm();
   const [mensajeError, setMensajeError] = useState('');
-
   const [inputValue, setInput] = useState({
     fabricante: '',
     proveedor: '',
-    apuntes: ''  // 🔹 Corregido: "apuntes" en lugar de "text-area"
+    apuntes: ''
   });
 
   const points = {
@@ -20,20 +25,8 @@ function Erp() {
 
   const handleInput = (e) => {
     const { name, value } = e.target;
-    setInput((inputValue) => {
-      const updatedData = {...inputValue,[name]: value};
-  
-      (
-        () => {
-          const sumPoints = points;
-          const localPoints = JSON.stringify(sumPoints);
-          localStorage.setItem('points', localPoints);
-        }
-      )()
-  
-      return updatedData;
-    });
-  }
+    setInput((prev) => ({ ...prev, [name]: value }));
+  };
 
   const calculateInputPoints = () => {
     return Object.keys(inputValue).reduce((total, key) => {
@@ -41,71 +34,64 @@ function Erp() {
     }, 0);
   };
 
-  const puntitos = () => {
-    const storedPoints = JSON.parse(localStorage.getItem('points')) || {};
-    return Object.values(storedPoints).reduce((acc, val) => acc + val, 0);
-  };
-
-  const totalPoints = () => calculateInputPoints();
-
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    setMensajeError('');
-
-    try {
-      const response = await fetch("http://localhost:4000/erp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json", // 🔹 Corregido "application/json"
-        },
-        body: JSON.stringify(inputValue),
-      });
-
-      if (!response.ok) {
-        throw new Error("Error en la conexión con el servidor");
+  const generatePDF = () => {
+    const pdf = new jsPDF();
+    pdf.text('Reporte de Puntos ERP', 20, 10);
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = 400;
+    canvas.height = 200;
+    const ctx = canvas.getContext('2d');
+    
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(points),
+        datasets: [{
+          label: 'Puntos',
+          data: Object.values(points),
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+        }]
       }
-
-      const data = await response.json();
-      console.log("Datos recibidos correctamente en el servidor", data);
-      toast.success("Datos enviados con éxito al servidor");
-      reset();
-      window.location.href = "/printReport";
-    } catch (error) {
-      console.log("Error al enviar los datos", error);
-      setMensajeError(error.message);
-    }
+    });
+    
+    setTimeout(() => {
+      const imageData = canvas.toDataURL('image/png');
+      pdf.addImage(imageData, 'PNG', 20, 20, 150, 80);
+      pdf.save('erp_report.pdf');
+    }, 1000);
   };
 
   return (
     <div className='sai'>
       <form className='form'>
         <h1>ERP</h1>
-
-        <label htmlFor="fabricante">Fabricante</label>
+        
+        <label htmlFor='fabricante'>Fabricante</label>
         <input
-          type="text"
-          id='erp-fabricante'
-          name="fabricante"
+          type='text'
+          id='fabricante'
+          name='fabricante'
           onChange={handleInput}
           value={inputValue.fabricante}
           placeholder='Fabricante'
         />
 
-        <label htmlFor="proveedor">Proveedor</label>
+        <label htmlFor='proveedor'>Proveedor</label>
         <input
-          type="text"
+          type='text'
           id='proveedor'
-          name="proveedor"
+          name='proveedor'
           onChange={handleInput}
           value={inputValue.proveedor}
           placeholder='Proveedor'
         />
 
-        <label htmlFor="apuntes">Apuntes</label>  {/* 🔹 Corregido el label */}
+        <label htmlFor='apuntes'>Apuntes</label>
         <input
-          type="textarea"
-          id='text-area'
-          name="apuntes" 
+          type='textarea'
+          id='apuntes'
+          name='apuntes'
           onChange={handleInput}
           value={inputValue.apuntes}
           placeholder='Indicar apuntes referentes a Erp'
@@ -113,16 +99,10 @@ function Erp() {
 
         {mensajeError && <p style={{ color: 'red' }}>{mensajeError}</p>}
 
-        <p>Puntos ERP: {totalPoints()}</p>
-        <p>Puntos API: {puntitos()}</p>
-
-        <button
-          variant='contained'
-          type="button" 
-          onClick={onSubmit}
-          className="btn btn-primary"
-        >
-          PRINT REPORT
+        <p>Puntos ERP: {calculateInputPoints()}</p>
+        
+        <button type='button' onClick={generatePDF} className='btn btn-primary'>
+          Imprimir PDF
         </button>
       </form>
     </div>

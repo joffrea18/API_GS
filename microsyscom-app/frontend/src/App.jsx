@@ -17,6 +17,7 @@ import PrinterOption from './context/PrinterOption';
 import Sai from './pages/Sai';
 import Almacenamiento from './pages/Almacenamiento';
 import Erp from './pages/Erp';
+import BarChart from '../src/context/Barchart';
 // import PrinterOption from './context/PrinterOption';
 // import { PointsProvider } from './context/PointsContext';
 // import Validator from './components/Validator/Validator';
@@ -24,7 +25,7 @@ import Erp from './pages/Erp';
 
 
 
-function App() {
+function App(points) {
   return (
     <>
     <Router>
@@ -55,6 +56,7 @@ function App() {
     <Route path='/printReport' element={<PrinterOption />} />
     <Route path='*' element={<NotFound />} />
     </Routes>
+    <BarChart data={points} />
     {/* </ PointsProvider> */}
     {/* <Footer /> */}
     </Router>
