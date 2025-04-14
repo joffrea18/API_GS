@@ -16,6 +16,7 @@ function Navbar() {
   useEffect(() => {
     if (location.pathname === '/') {
       sessionStorage.removeItem("contactoForm");
+      setDominio('');
     } else {
       const savedData = sessionStorage.getItem("contactoForm");
       if (savedData) {
@@ -25,7 +26,20 @@ function Navbar() {
     }
   }, [location.pathname]);
 
-  const showSidebar = () => setSidebar(!sidebar);
+  const handleClick = () => {
+    localStorage.removeItem("contactoForm"); // o removeItem()
+  };
+
+  const showSidebar = () => {
+    if (location.pathname === '/') {
+      setSidebar(sidebar);
+    } else if(location.pathname === '/erp')
+    {
+      setSidebar(!sidebar);
+    }
+    };
+
+
 
   return (
     <main>
@@ -35,7 +49,8 @@ function Navbar() {
     <FaIcons.FaBars onClick={showSidebar} />
     </Link>
     <section>
-    <Link to='/'>
+    <Link to='/'
+    onClick={handleClick}>
     <img 
     className='logo'
     alt='logo'

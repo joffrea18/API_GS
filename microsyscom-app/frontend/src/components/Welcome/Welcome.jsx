@@ -68,7 +68,7 @@ const Welcome = () => {
       className="input_welcome"
       value={inputValue.dominio}
       onChange={handleInputChange}
-      placeholder="Dominio / Business nombre*"
+      placeholder="*Dominio / Business nombre"
     />
     </section>
     <section>
@@ -78,7 +78,7 @@ const Welcome = () => {
       className="input_welcome"
       value={inputValue.telefono}
       onChange={handleInputChange}
-      placeholder="Teléfono*"
+      placeholder="*Teléfono"
     />
     </section>
     {mensajeError && <p style={{ color: 'red' }}>{mensajeError}</p>}

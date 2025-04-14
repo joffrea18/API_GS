@@ -25,7 +25,18 @@ function Erp() {
 
   const handleInput = (e) => {
     const { name, value } = e.target;
-    setInput((prev) => ({ ...prev, [name]: value }));
+    setInput((prev) => {
+    const updatedData = { ...prev, [name]: value } 
+    (
+      () => {
+        const sumPoints = points;
+        const localPoints = JSON.stringify(sumPoints);
+        localStorage.setItem('point', localPoints);
+      }
+    )()
+
+    return updatedData;
+  });
   };
 
   const calculateInputPoints = () => {
@@ -33,6 +44,11 @@ function Erp() {
       return inputValue[key] ? total + points[key] : total;
     }, 0);
   };
+
+  function puntitos () {
+    const storedPoints = JSON.parse(localStorage.getItem('point')) || {}; 
+    return Object.values(storedPoints).reduce((acc, val) => acc + val, 0);
+  }
 
   const generatePDF = () => {
     const pdf = new jsPDF();
@@ -100,6 +116,7 @@ function Erp() {
         {mensajeError && <p style={{ color: 'red' }}>{mensajeError}</p>}
 
         <p>Puntos ERP: {calculateInputPoints()}</p>
+        <p>Puntos API: {puntitos()}</p>
         
         <button type='button' onClick={generatePDF} className='btn btn-primary'>
           Imprimir PDF

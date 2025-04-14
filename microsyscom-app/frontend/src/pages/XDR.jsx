@@ -83,7 +83,7 @@ const handleInput = (e) => {
         () => {
           const sumPoints = points;
           const localPoints = JSON.stringify(sumPoints);
-          localStorage.setItem('points', localPoints);
+          localStorage.setItem('point', localPoints);
         }
       )()
   
@@ -100,7 +100,7 @@ const handleInput = (e) => {
         () => {
           const sumPoints = points;
           const localPoints = JSON.stringify(sumPoints);
-          localStorage.setItem('points', localPoints);
+          localStorage.setItem('point', localPoints);
         }
       )()
   
@@ -133,7 +133,7 @@ const calculateCheckboxPoints = () => {
 
   
   function puntitos () {
-    const storedPoints = JSON.parse(localStorage.getItem('points')) || {}; 
+    const storedPoints = JSON.parse(localStorage.getItem('point')) || {}; 
     return Object.values(storedPoints).reduce((acc, val) => acc + val, 0);
   }
   

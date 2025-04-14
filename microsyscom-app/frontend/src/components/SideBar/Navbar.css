@@ -14,12 +14,6 @@
   background: none;
 }
 
-.logo{
-  width: 47%;
-  justify-content: center;
-  /* position: relative; */
-}
-
 .img_name {
   width: 23%;
 }
@@ -96,12 +90,6 @@
   align-items: center;
 }
 
-.dom_welcome {
-  margin-right: 1rem;
-  text-transform: uppercase;
-  text-shadow:#1a83ff;
-  color: yellow;
-}
 
 @media (min-width: 175px), (max-width: 500px) {
   main{
